@@ -9,6 +9,8 @@ import {
 import "leaflet/dist/leaflet.css";
 import { useState, useRef } from "react";
 
+const EARTH_RADIUS_KM = 6371; // Raio médio da Terra em quilômetros
+
 export default function Map() {
   const [clickedPosition, setClickedPosition] = useState(null);
   const [inputName, setInputName] = useState("");
@@ -50,29 +52,34 @@ export default function Map() {
           ],
         },
       }));
-      setSelectedName(inputName); // Define o nome recém-adicionado como o nome selecionado
+
+      setSelectedName(inputName);
       setClickedPosition(null);
+
+      // Calcular área e perímetro após adicionar uma nova coordenada
+      const newVertices = [
+        ...(data[inputName]?.coordenadas || []),
+        [clickedPosition.lat, clickedPosition.lng],
+      ];
+      const area = calculateArea(newVertices);
+      const perimeter = calculatePerimeter(newVertices);
     }
   };
 
   const handleNameSelect = (e) => {
     setSelectedName(e.target.value);
-    setClickedPosition(null); // Limpa a posição do marcador para mostrar apenas o polígono selecionado manualmente
-    setShowAll(false); // Desativar a visualização de todos os polígonos quando um nome for selecionado
+    setClickedPosition(null);
+    setShowAll(false);
   };
 
   const handleConcluir = () => {
-    setInputName(""); // Limpa o input ao pressionar o botão "Concluir"
+    setInputName("");
   };
 
   const handleShowAll = () => {
-    setShowAll(true); // Mostrar todos os polígonos
-    setSelectedName(""); // Limpar a seleção do dropdown
-    setClickedPosition(null); // Limpar a posição do marcador
-  };
-
-  const handleShowSelected = () => {
-    setShowAll(false); // Mostrar apenas o polígono selecionado
+    setShowAll(true);
+    setSelectedName("");
+    setClickedPosition(null);
   };
 
   const getRandomColor = () => {
@@ -83,6 +90,53 @@ export default function Map() {
     }
     return color;
   };
+
+  const formatCoordinates = (coordenadas) => {
+    return coordenadas.map(([lat, lng]) => `${lat}, ${lng}`).join(" | ");
+  };
+
+  const calculateArea = (vertices) => {
+    let area = 0;
+    const n = vertices.length;
+
+    for (let i = 0; i < n; i++) {
+      const [lat1, lng1] = vertices[i];
+      const [lat2, lng2] = vertices[(i + 1) % n];
+      area +=
+        toRadians(lng2 - lng1) *
+        (2 + Math.sin(toRadians(lat1)) + Math.sin(toRadians(lat2)));
+    }
+
+    area = Math.abs((area * EARTH_RADIUS_KM * EARTH_RADIUS_KM) / 2);
+    return area;
+  };
+
+  const calculatePerimeter = (vertices) => {
+    let perimeter = 0;
+    const n = vertices.length;
+
+    for (let i = 0; i < n; i++) {
+      const [lat1, lng1] = vertices[i];
+      const [lat2, lng2] = vertices[(i + 1) % n];
+      const dLat = toRadians(lat2 - lat1);
+      const dLng = toRadians(lng2 - lng1);
+      perimeter +=
+        2 *
+        EARTH_RADIUS_KM *
+        Math.asin(
+          Math.sqrt(
+            Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRadians(lat1)) *
+                Math.cos(toRadians(lat2)) *
+                Math.sin(dLng / 2) ** 2
+          )
+        );
+    }
+
+    return perimeter;
+  };
+
+  const toRadians = (angle) => angle * (Math.PI / 180);
 
   return (
     <>
@@ -96,7 +150,6 @@ export default function Map() {
       <button onClick={handleConcluir}>Concluir</button>
       <button onClick={handleShowAll}>Visualizar Todos</button>
 
-      {/* Dropdown para selecionar nomes salvos */}
       <select value={selectedName} onChange={handleNameSelect}>
         <option value="">Selecione um nome</option>
         {Object.keys(data).map((name) => (
@@ -118,21 +171,46 @@ export default function Map() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Renderiza todos os polígonos */}
         {showAll &&
           Object.entries(data).map(([name, { coordenadas }]) => (
             <LayerGroup key={name}>
-              <Polygon positions={coordenadas} color={colors[name]} />
+              <Polygon positions={coordenadas} color={colors[name]}>
+                <Popup>
+                  <h4>Nome: {name}</h4>
+                  <p>Coordenadas:</p>
+                  {formatCoordinates(coordenadas)}
+                  <p>Área: {calculateArea(coordenadas).toFixed(2)} km²</p>
+                  <p>
+                    Perímetro: {calculatePerimeter(coordenadas).toFixed(2)} km
+                  </p>
+                </Popup>
+              </Polygon>
             </LayerGroup>
           ))}
 
-        {/* Renderiza apenas o polígono com as coordenadas do nome selecionado manualmente */}
         {!showAll && selectedName && data[selectedName]?.coordenadas && (
           <LayerGroup>
             <Polygon
               positions={data[selectedName].coordenadas}
               color={colors[selectedName]}
-            />
+            >
+              <Popup>
+                <h4>Nome: {selectedName}</h4>
+                <p>Coordenadas:</p>
+                {formatCoordinates(data[selectedName].coordenadas)}
+                <p>
+                  Área:{" "}
+                  {calculateArea(data[selectedName].coordenadas).toFixed(2)} km²
+                </p>
+                <p>
+                  Perímetro:{" "}
+                  {calculatePerimeter(data[selectedName].coordenadas).toFixed(
+                    2
+                  )}{" "}
+                  km
+                </p>
+              </Popup>
+            </Polygon>
           </LayerGroup>
         )}
 
