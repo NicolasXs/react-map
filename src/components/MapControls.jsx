@@ -1,26 +1,31 @@
 import React from "react";
+import "./MapControls.css";
 
 const MapControls = ({
   inputName,
   setInputName,
   handleAddCoordinate,
-  handleConcluir,
   handleShowAll,
   selectedName,
   handleNameSelect,
   data,
 }) => {
   return (
-    <>
+    <div className="controls">
+      <h1 className="title">Cadastro de polígonos</h1>
       <input
+        className="input"
         type="text"
         placeholder="Nome"
         value={inputName}
         onChange={(e) => setInputName(e.target.value)}
       />
-      <button onClick={handleAddCoordinate}>Adicionar</button>
-      <button onClick={handleConcluir}>Concluir</button>
-      <button onClick={handleShowAll}>Visualizar Todos</button>
+      <button className="button" onClick={handleAddCoordinate}>
+        Adicionar
+      </button>
+      <button className="button" onClick={handleShowAll}>
+        Visualizar Todos
+      </button>
 
       <select value={selectedName} onChange={handleNameSelect}>
         <option value="">Selecione um nome</option>
@@ -30,7 +35,7 @@ const MapControls = ({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 };
 

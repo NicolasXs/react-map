@@ -1,0 +1,64 @@
+.controls {
+  margin-bottom: 2em;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 2em;
+}
+/* Estilos para telas menores (até 600 pixels de largura) */
+@media screen and (max-width: 600px) {
+  .input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Estilos para telas maiores (acima de 600 pixels de largura) */
+@media screen and (min-width: 601px) {
+  .input {
+    width: 200px;
+    margin-right: 10px;
+  }
+
+  .button {
+    display: inline-block;
+    width: auto;
+    margin-right: 10px;
+  }
+
+  select {
+    width: 200px;
+    margin-right: 10px;
+  }
+}
+
+/* Estilos comuns para ambos os tamanhos de tela */
+.input,
+.button,
+select {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.button {
+  color: #fff;
+  cursor: pointer;
+}
+
+.select {
+  padding: 8px;
+}

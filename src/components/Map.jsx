@@ -52,16 +52,14 @@ export default function Map() {
 
   const handleNameSelect = (e) => {
     setSelectedName(e.target.value);
+    setInputName(selectedName);
     setClickedPosition(null);
     setShowAll(false);
   };
 
-  const handleConcluir = () => {
-    setInputName("");
-  };
-
   const handleShowAll = () => {
     setShowAll(true);
+    setInputName("");
     setSelectedName("");
     setClickedPosition(null);
   };
@@ -72,7 +70,6 @@ export default function Map() {
         inputName={inputName}
         setInputName={setInputName}
         handleAddCoordinate={handleAddCoordinate}
-        handleConcluir={handleConcluir}
         handleShowAll={handleShowAll}
         selectedName={selectedName}
         handleNameSelect={handleNameSelect}
@@ -88,9 +85,6 @@ export default function Map() {
         clickedPosition={clickedPosition}
         setClickedPosition={setClickedPosition}
         selectedName={selectedName}
-        setShowAll={setShowAll}
-        setSelectedName={setSelectedName}
-        handleAddCoordinate={handleAddCoordinate}
         formatCoordinates={formatCoordinates}
         calculateArea={calculateArea}
         calculatePerimeter={calculatePerimeter}
