@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import MapControls from "./MapControls";
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import MapComponent from "./MapComponent";
 
 import {
@@ -17,6 +17,10 @@ export default function Map() {
   const [inputName, setInputName] = useState("");
   const [selectedName, setSelectedName] = useState("");
   const [clickedPosition, setClickedPosition] = useState(null);
+
+  useEffect(() => {
+    setInputName(selectedName);
+  }, [selectedName]);
 
   const handleAddCoordinate = () => {
     if (clickedPosition && inputName) {
@@ -52,7 +56,6 @@ export default function Map() {
 
   const handleNameSelect = (e) => {
     setSelectedName(e.target.value);
-    setInputName(selectedName);
     setClickedPosition(null);
     setShowAll(false);
   };
