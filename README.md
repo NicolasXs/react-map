@@ -1,4 +1,4 @@
-<h1 align="center"> Cadastro de polígonos com o leaflet </h1>
+<h1 align="center"> Cadastro de polígonos com o Leaflet </h1>
 
 <p align="center">
 Com um simples clique no mapa, você pode começar a criar seus polígonos, definindo os vértices para delimitar a área desejada. <br/>
